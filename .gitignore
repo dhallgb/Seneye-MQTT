@@ -101,4 +101,4 @@ ENV/
 .mypy_cache/
 
 # config file
-config.json
+config.yml

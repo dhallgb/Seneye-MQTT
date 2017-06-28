@@ -1,0 +1,5 @@
+sud:
+  device: string
+mqtt:
+  url:	endpoint
+  port:	1883  
