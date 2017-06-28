@@ -1,0 +1,8 @@
+sud:
+  device: device string
+mqtt:
+  url:    endpoint
+  port:	  1883
+  topic:  mqtt/topic/string
+aquarium:
+  name:	  reef

@@ -1,0 +1,8 @@
+sud:
+  device: F500214755881923AEAEA4260100D020
+mqtt:
+  url:    lonna
+  port:   1883
+  topic:  raw/aquarium
+aquarium:
+  name: conservatory

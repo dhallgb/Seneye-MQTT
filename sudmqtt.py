@@ -2,70 +2,34 @@
 #
 # Read Seneye SUD and publish readings to MQTT
 #
-from weathericons import interpret_icons
-import ujson
-import machine
-import time
-Tx='G12'
-server='lonna'
-service='weatherunderground'
-uartnum=1
-pycom.heartbeat(False)
+import paho.mqtt.publish as publish
+import usb.core
+import yaml
+loop=60  # read loop in seconds
 
+# read config, file string can contain a path if needed
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+# do some prelim work such as finding the seneye device
+# TBD: multiple devices?
 def setup():
-    gc.enable()
-    eink_init()
-    eink_clear()
-    eink_draw_line(300,0,300,599)
-    eink_draw_line(300,200,799,200)
-    eink_draw_line(300,400,799,400)
-    eink_update()
+    config = yaml.safe_load(open("config.yaml"))
+    print(config)
+    device = usb.core.find(idVendor=9463, idProduct=8708)          # should this be '0x...'?
+    return(device)
 
-def weather_msg(topic, msg):
-    pycom.rgbled(0x007f00)
-    time.sleep(1)
-    pycom.rgbled(0x000000)
-    weather=ujson.loads(msg)
-    icon=interpret_icons(service,weather["iconid"])
-    eink_set_en_font(ASCII32)
-    eink_disp_string(icon["label"], 50, 250)
-    eink_disp_bitmap(icon["icon"]+'.BMP', 100, 100)
-    eink_set_en_font(ASCII64)
-    eink_disp_string(str(weather["temperature"]), 100, 350)
-    for i in range(1,4):
-        y = ((i*2)-1)*100
-        eink_disp_string(str(weather["forecast"][i]["low"]),400,y)
-        eink_disp_string(str(weather["forecast"][i]["high"]),600,y)
-    eink_update()
+def readSUD(device):
+    pass
 
-def main1():
-    setup()
-    c = MQTTClient("eink_display", server)
-    c.set_callback(weather_msg)
-    c.connect()
-    c.subscribe(b"raw/weather")
+def main():
+    dev = setup()
+    print(dev)
     while True:
-        if True:
-            print("one>>",gc.mem_free())
-            c.wait_msg()
-        else:
-            print("two>>",gc.mem_free())
-            c.check_msg()
-            time.sleep(55)
-    c.disconnect()
-
-def main2():
-    setup()
-    c = MQTTClient("eink_display", server)
-    c.set_callback(weather_msg)
-    c.subscribe(b"raw/weather")
-    while True:
-        c.connect()
-        c.check_msg()
-        c.disconnect()
-        time.sleep(55)
-        print("two>>",gc.mem_free())
+        readings = readSUD(dev)
+        publish.single("raw/aquarium", "readings", hostname="lonna")
+        time.sleep(loop)
 
 if __name__ == "__main__":
     main()
-
