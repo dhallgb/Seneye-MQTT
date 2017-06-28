@@ -1,5 +1,6 @@
 sud:
   device: F500214755881923AEAEA4260100D020
+  loop:   60
 mqtt:
   url:    lonna
   port:   1883

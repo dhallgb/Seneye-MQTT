@@ -10,5 +10,8 @@ Read Seneye USB Device and transmit readings via MQTT
 - MQTT broker
 
 # Usage
-1. Copy config.yml.template to config.yml and edit selecting your device, MQTT broker, and publication topic
+1. Copy config.yml.template to config.yml and edit selecting 
+-- your device, 
+-- MQTT broker, 
+-- and publication topic
 1. Run this Python program as a daemon, Google is your friend
