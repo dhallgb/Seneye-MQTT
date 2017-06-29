@@ -1,6 +1,5 @@
 sud:
-  device: device string
-  loop: read timeout
+  device: serial
 mqtt:
   url:    endpoint
   port:	  1883
