@@ -2,6 +2,7 @@
 #
 # Read Seneye SUD and publish readings to MQTT
 # MQTT is published using the 'single' publish instead of opening a client connection
+# See the file protocol.mdown for a description of the SUD communications flow
 #
 import paho.mqtt.publish as publish
 import usb.core
@@ -34,16 +35,20 @@ def readSUD(dev):
     intf = cfg[(0,0)]
     print("interface>>>",intf)
 
-# The SUD device seems to have these 2 types of transfers: interrupt and bulk.
-# These are the endpoints: (got by printing the configuration above)
-#   ENDPOINT 0x81: Interrupt IN
-#   ENDPOINT 0x1: Interrupt OUT
-#   ENDPOINT 0x82: Bulk IN
-#   ENDPOINT 0x2: Bulk OUT
+    endpoint = dev[0][(0,0)][0]
+    data = dev.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=1000)
+    try:
+        data = dev.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=10)
+    #    if data is not None and len(data) > 2:
+        print(data)
+    except usb.core.USBError as e:
+        if e.errno != 110: # 110 is a timeout.
+            sys.exit("Error readin data: %s" % str(e))
 
-
-
-#    dev.write(1,"HELLOSUD")
+    # write to device with signature string
+#    msg="HELLOSUD"
+#    rc=dev.write(0x81,msg)
+#    print("return code: ",rc)
 
     # re-attach kernel driver if it was active
     if kernel_driver_active:
@@ -52,6 +57,7 @@ def readSUD(dev):
         print("reattching kernel driver")
         dev.attach_kernel_driver(interface)
 
+    usb.util.dispose_resources(dev)
     return('sud readings')
 
 # loop over reading from SUD, publishing to MQTT broker, and resting for timeout

@@ -1,22 +1,27 @@
 # SUD Protocol
-This is an attempt to describe the SUD protocol, from reading the main.cpp file which Seneye released.
+This is an attempt to describe the SUD protocol based on reading the main.cpp file which Seneye released.
 
 ## USB device
 ### Transfers
-The SUD device seems to have these 2 types of transfers: interrupt and bulk.
+The SUD device seems to have these 2 types of USB transfers available: interrupt and bulk.
 
 ### Endpoints
+Max packet size is 64 bytes for all endpoints.
 From printing the configuration these are the endpoints:
 - ENDPOINT 0x81: Interrupt IN
 - ENDPOINT 0x1: Interrupt OUT
 - ENDPOINT 0x82: Bulk IN
 - ENDPOINT 0x2: Bulk OUT
-Max packet size is 64 bytes for all endpoints.
+
+Apparently HID devices do not use the 'bulk' interface, so only the 'interrupt' interface is used.
+This comes from https://en.wikipedia.org/wiki/USB_human_interface_device_class
+
 
 ## Protocol
-1. Communcations starts with a message "HELLOSUD" which will return the type of the device
+1. Communcation starts with a message "HELLOSUD" which will return the type of the device
 	- 0: Home
 	- 1: Home
-	- 2: Pound (? what is this?)
+	- 2: Pond
 	- 3: Reef
+1. 
 1. Communcation ends with a "BYESUD" message

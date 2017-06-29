@@ -6,4 +6,4 @@ mqtt:
   port:   1883
   topic:  raw/aquarium
 aquarium:
-  name: conservatory
+  name:   conservatory
