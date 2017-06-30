@@ -16,9 +16,15 @@ From printing the configuration these are the endpoints:
 Apparently HID devices do not use the 'bulk' interface, so only the 'interrupt' interface is used.
 This comes from https://en.wikipedia.org/wiki/USB_human_interface_device_class
 
+USB devices have a hierarchy of interfaces, like so:
+1. Device
+1. Configuration
+1. Interface
+1. Alternate setting
+1. Endpoint
 
 ## Protocol
-1. Communcation starts with a message "HELLOSUD" which will return the type of the device
+1. Communication starts with a message "HELLOSUD" which will return the type of the device
 	- 0: Home
 	- 1: Home
 	- 2: Pond

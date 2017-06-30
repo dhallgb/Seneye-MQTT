@@ -9,7 +9,7 @@ This project is an attempt to do some basic stuff: read from a Seneye device and
 	- MQTT, I used Paho MQTT installed using 'pip install paho-mqtt'
 - Seneye device (https://www.seneye.com)
 - Linux single-board computer (Odroid, Raspberry Pi, ...). I used a RaspPi Zero W which looks like a stick of gum...!
-- MQTT broker such as Bluemix, HiveMQ, CloudMQTT, or see https://github.com/mqtt/mqtt.github.io/wiki/public_brokers
+- MQTT broker such as Bluemix, HiveMQ, CloudMQTT, or see [here]: https://github.com/mqtt/mqtt.github.io/wiki/public_brokers
 - if you need a dashboard, FreeBoard.io, Crouton (http://crouton.mybluemix.net/crouton/gettingStarted) are a couple
 
 # Usage
