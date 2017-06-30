@@ -1,9 +1,9 @@
 # SUD Protocol
-This is an attempt to describe the SUD protocol based on reading the main.cpp file which Seneye released.
+This is an attempt to describe the SUD protocol based on reading the main.cpp file that Seneye released.
 
 ## USB device
 ### Transfers
-The SUD device seems to have these 2 types of USB transfers available: interrupt and bulk.
+The SUD device seems to have these 2 types of USB transfers available: interrupt and bulk. HID devices only use 2 transfer modes of either control or interrupt.
 
 ### Endpoints
 Max packet size is 64 bytes for all endpoints.
@@ -24,15 +24,24 @@ USB devices have a hierarchy of interfaces, like so:
 1. Endpoint
 
 ## Protocol
-1. Communication starts with a message "HELLOSUD" which will return a device string, the bytes of which:
-	- byte 1: '136'
-	- byte 2: '1'
-	- byte 3: '1'
-	- byte 4: the type of the device
-		- 0: Home
-		- 1: Home
-		- 2: Pond
-		- 3: Reef
-	- byte 5: '48'
-	- byte 6: '78'
+1. Communication starts with a message "HELLOSUD".
+1. Type 1:
+	- byte 1: eyecatcher value = 0x88
+	- byte 2: '0x01'='HELLOSUD', '0x02'='READING', '0x03'='LED' |
+	- byte 3: '1'=success, otherwise=failure
+	- byte 4: the type of the device, 0/1=home, 2=pond, 3=reef
+	- byte 5: device version byte 1
+	- byte 6: device version byte 2, version is x.x.x
+1. Type 2:
+	- byte 1: eyecatcher value = 0x00
+	- byte 2: '0x01'=reading, '0x02'=lightmeter reading
 1. Communcation ends with a "BYESUD" message
+
+| Type | Byte1 | Byte 2 | Byte 3 | Byte 4 | Byte5 | Byte 6 | Byte 7 | Byte 8 | Description |
+|---|---|---|---|---|---|---|---|---|---|
+|1|0x88|0x01||||||||Response from HELLOSUD|
+|1|0x88|0x02||||||||READING|
+|1|0x88|0x03||||||||LED|
+|2|0x00|0x01||||||||Reading|
+|2|0x00|0x02||||||||Lightmeter reading|
+

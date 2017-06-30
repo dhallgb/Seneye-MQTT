@@ -7,11 +7,8 @@
 import paho.mqtt.publish as publish
 import usb.core
 import usb.util
-import time
 import yaml
 import sys
-endpoint_in  = 0x81
-endpoint_out = 0x1
 
 def main():
     # load config
@@ -55,26 +52,6 @@ def main():
 #            bAlternateSetting = alternate_setting
 #        )
 #
-#    ep = usb.util.find_descriptor(
-#        intf,
-#        # match the first IN endpoint
-#        custom_match = \
-#        lambda e: \
-#            usb.util.endpoint_direction(e.bEndpointAddress) == \
-#            usb.util.ENDPOINT_IN
-#        )
-#
-############################################################################################################
-#
-#    # set the base endpoint, and attempt a read
-#    endpoint = dev[0][(0,0)][0]
-#    try:
-#        data = dev.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=1000)
-#        if data is not None and len(data) > 2:
-#            print(data)
-#    except usb.core.USBError as e:
-#        sys.exit("Error reading data: %s" % str(e))
-#
 
     # write to device with signature string
     msg="HELLOSUD"
@@ -94,11 +71,12 @@ def main():
         print("reattaching kernel driver")
 #        dev.attach_kernel_driver(interface)
 
+    usb.util.release_interface(dev, interface)
     usb.util.dispose_resources(dev)
+    dev.reset()
 
     # push readings to MQTT broker
-    readings="readings"
-    publish.single(config['mqtt']['topic'], readings, hostname=config['mqtt']['url'])
+    publish.single(config['mqtt']['topic'], sret, hostname=config['mqtt']['url'])
 
 if __name__ == "__main__":
     main()
