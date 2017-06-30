@@ -24,10 +24,15 @@ USB devices have a hierarchy of interfaces, like so:
 1. Endpoint
 
 ## Protocol
-1. Communication starts with a message "HELLOSUD" which will return the type of the device
-	- 0: Home
-	- 1: Home
-	- 2: Pond
-	- 3: Reef
-1. 
+1. Communication starts with a message "HELLOSUD" which will return a device string, the bytes of which:
+	- byte 1: '136'
+	- byte 2: '1'
+	- byte 3: '1'
+	- byte 4: the type of the device
+		- 0: Home
+		- 1: Home
+		- 2: Pond
+		- 3: Reef
+	- byte 5: '48'
+	- byte 6: '78'
 1. Communcation ends with a "BYESUD" message

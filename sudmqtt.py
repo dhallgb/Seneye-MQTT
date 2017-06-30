@@ -10,11 +10,16 @@ import usb.util
 import time
 import yaml
 import sys
+endpoint_in  = 0x81
+endpoint_out = 0x1
 
-def readSUD():
+def main():
+    # load config
+    config = yaml.safe_load(open("config.yaml"))
+
     # find the device using product id strings
     dev = usb.core.find(idVendor=9463, idProduct=8708)
-    print("device>>>",dev)
+    print("device       >>>",dev)
 
     # release kernel driver if active
     interface = 0
@@ -23,42 +28,76 @@ def readSUD():
         was_kernel_driver_active = True 
         dev.detach_kernel_driver(interface)
 
-    # by passing no parameter we pick up the first configuration, and claim interface
+    # by passing no parameter we pick up the first configuration, then claim interface
     dev.set_configuration()
     usb.util.claim_interface(dev, interface)
-    cfg = dev.get_active_configuration()
-    print("configuration>>>",cfg)
-    intf = cfg[(0,0)]
-    print("interface>>>",intf)
+    configuration = dev.get_active_configuration()
+    print("configuration>>>",configuration)
+    interface = configuration[(0,0)]
+    print("interface    >>>",interface)
 
-    # set the base endpoint, and attempt a read
-    endpoint = dev[0][(0,0)][0]
-    try:
-        data = dev.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=1000)
-        if data is not None and len(data) > 2:
-            print(data)
-    except usb.core.USBError as e:
-        sys.exit("Error reading data: %s" % str(e))
+    # find the first in and out endpoints in our interface
+    epIn = usb.util.find_descriptor(interface, custom_match= lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
+    epOut = usb.util.find_descriptor(interface, custom_match = lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
+
+    # were our endpoints found?
+    assert epIn is not None
+    assert epOut is not None
+
+    print("endpoint in  >>>",epIn)
+    print("endpoint out >>>",epOut)
+
+#
+#    interface_number = cfg[(0,0)].bInterfaceNumber
+#    alternate_setting = usb.control.get_interface(dev,interface_number)
+#    intf = usb.util.find_descriptor(
+#            cfg, bInterfaceNumber = interface_number,
+#            bAlternateSetting = alternate_setting
+#        )
+#
+#    ep = usb.util.find_descriptor(
+#        intf,
+#        # match the first IN endpoint
+#        custom_match = \
+#        lambda e: \
+#            usb.util.endpoint_direction(e.bEndpointAddress) == \
+#            usb.util.ENDPOINT_IN
+#        )
+#
+############################################################################################################
+#
+#    # set the base endpoint, and attempt a read
+#    endpoint = dev[0][(0,0)][0]
+#    try:
+#        data = dev.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=1000)
+#        if data is not None and len(data) > 2:
+#            print(data)
+#    except usb.core.USBError as e:
+#        sys.exit("Error reading data: %s" % str(e))
+#
 
     # write to device with signature string
-#    msg="HELLOSUD"
-#    rc=dev.write(0x81,msg)
-#    print("return code: ",rc)
+    msg="HELLOSUD"
+    rc=dev.write(epOut,msg)
+    print("return code  >>>",rc)
+
+    # read from device
+    ret=dev.read(epIn,epIn.wMaxPacketSize)
+    sret = ''.join([chr(x) for x in ret])
+    print("return       >>>",ret)
+    print("return string>>>",sret)
 
     # re-attach kernel driver if it was active
     if was_kernel_driver_active:
         print("releasing interface")
         usb.util.release_interface(dev, interface)
-        print("reattching kernel driver")
-        dev.attach_kernel_driver(interface)
+        print("reattaching kernel driver")
+#        dev.attach_kernel_driver(interface)
 
     usb.util.dispose_resources(dev)
-    return('readings')
 
-def main():
-    # main: load config, read device, publish readings
-    config = yaml.safe_load(open("config.yaml"))
-    readings = readSUD()
+    # push readings to MQTT broker
+    readings="readings"
     publish.single(config['mqtt']['topic'], readings, hostname=config['mqtt']['url'])
 
 if __name__ == "__main__":
