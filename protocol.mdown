@@ -23,11 +23,11 @@ USB devices have a hierarchy of interfaces, like so:
 1. Alternate setting
 1. Endpoint
 
-## Protocol
+## Protocol messages
 1. Type 1: Communication starts with a message "HELLOSUD".
 1. Type 2:
 	- byte 1: eyecatcher value = 0x88
-	- byte 2: '0x01'='HELLOSUD', '0x02'='READING', '0x03'='LED' |
+	- byte 2: '0x01'='HELLOSUD', '0x02'='READING', '0x03'='LED'
 	- byte 3: '1'=success, otherwise=failure
 	- byte 4: the type of the device, 0/1=home, 2=pond, 3=reef
 	- byte 5: device version byte 1
@@ -37,13 +37,19 @@ USB devices have a hierarchy of interfaces, like so:
 	- byte 2: '0x01'=reading, '0x02'=lightmeter reading
 1. Type 4: Communcation ends with a "BYESUD" message
 
+## Protocol table
+
 | Type | Byte 1 | Byte 2 | Byte 3 | Byte 4 | Byte 5 | Byte 6 | Byte 7 | Byte 8 | Description |
 |---|---|---|---|---|---|---|---|---|---|
 |1|H|E|L|L|O|S|U|D|Start comms|
 |2|0x88|0x01|||||||Response from HELLOSUD|
-|2|0x88|0x02|||||||READING|
-|2|0x88|0x03|||||||LED|
+|2|0x88|0x02|1||||||READING|
+|2|0x88|0x03|1||||||LED|
 |3|0x00|0x01|||||||Reading|
 |3|0x00|0x02|||||||Lightmeter reading|
 |4|B|Y|E|S|U|D|||End comms|
 
+## Protocol flow
+From what I have been able to determine from the C++ module that Seneye released, the flow goes a little like this: once you have obtained correct access to the device via USB handlers, you start by sending the "HELLOSUD" message and receive a version message in response. You then ask for the sensor values using a message "READING", and get back the sensor values. At the end you then send a "BYESUD" closing message to stop communication and close down the USB handlers as appropriate.
+
+At least this is what I think happens, so far I can get the welcome response back but not the sensor readings. The Seneye main.cpp module does work however as I got that working on Linux using much munging and CMake!

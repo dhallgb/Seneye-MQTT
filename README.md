@@ -8,13 +8,16 @@ This project is an attempt to do some basic stuff: read from a Seneye device and
 	- PyUSB installed using PIP 'pip install pyusb'
 	- MQTT, I used Paho MQTT installed using 'pip install paho-mqtt'
 - Seneye device (https://www.seneye.com)
-- Linux single-board computer (Odroid, Raspberry Pi, ...). I used a RaspPi Zero W which looks like a stick of gum...!
+- Linux single-board computer (Odroid, Raspberry Pi, ...). I used a RasPi Zero W which looks like a stick of gum...!
 - MQTT broker such as Bluemix, HiveMQ, CloudMQTT, or see https://github.com/mqtt/mqtt.github.io/wiki/public_brokers
 - if you need a dashboard, FreeBoard.io, Crouton (http://crouton.mybluemix.net/crouton/gettingStarted) are a couple
 
 # Usage
+1. Using a microusb adapter connect your Seneye SUD to the microusb port of a RasPi Zero
+1. Install prerequisites as above
+1. If you want to run without using sudo, try putting something like the 10-local.rules file into your /etc/udev/rules.d/ directory. To understand this better search the internet for "access USB without sudo"
 1. copy config.yaml.template to config.yaml and edit changing at least
 	- MQTT broker endpoint
 	- publication topic
 1. run periodically, I used cron
-1. subscribe to the published topic
+1. subscribe to the published topic and put it on a dashboard

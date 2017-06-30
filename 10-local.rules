@@ -1,0 +1,1 @@
+SUBSYSTEMS=="usb", ATTRS{product}=="Seneye SUD v 2.0.16", GROUP="users"
