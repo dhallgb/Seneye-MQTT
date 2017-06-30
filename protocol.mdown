@@ -39,9 +39,9 @@ USB devices have a hierarchy of interfaces, like so:
 
 | Type | Byte1 | Byte 2 | Byte 3 | Byte 4 | Byte5 | Byte 6 | Byte 7 | Byte 8 | Description |
 |---|---|---|---|---|---|---|---|---|---|
-|1|0x88|0x01||||||||Response from HELLOSUD|
-|1|0x88|0x02||||||||READING|
-|1|0x88|0x03||||||||LED|
-|2|0x00|0x01||||||||Reading|
-|2|0x00|0x02||||||||Lightmeter reading|
+|1|0x88|0x01|||||||Response from HELLOSUD|
+|1|0x88|0x02|||||||READING|
+|1|0x88|0x03|||||||LED|
+|2|0x00|0x01|||||||Reading|
+|2|0x00|0x02|||||||Lightmeter reading|
 
