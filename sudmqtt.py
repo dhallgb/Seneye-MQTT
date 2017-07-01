@@ -81,43 +81,15 @@ def read_sud(dev, interface):
     return(c)
 
 def mungReadings(p):
-    # I start by assuming that short = 16 bits, int = 32 bits
-    #
-    #int Ts;
-    #bit reserved : 2;
-    #bit InWater : 1;
-    #bit SlideNotFitted : 1;
-    #bit SlideExpired : 1;
-    #bit StateT : 2;
-    #bit StatePh : 2;
-    #bit StateNh3 : 2;
-    #bit Error : 1;
-    #bit IsKelvin : 1;
-    #char reserved[8];   this is 64 bits long!
-    #int  Kelvin;
-    #int  x;
-    #int  y;
-    #int  Par;
-    #int  Lux;
-    #char  PUR;
-    #short pH;
-    #short Nh3;
-    #int  T; - I presume that this is temperature
-    #char reserved[16];
+    # see protocol.mdown for explaination of this
     s={}
-    i=36 # this is the start of the data, so int + 2 bits = 34, right??!!?!?!
+    i=36
     s['InWater']=p[i]
     s['SlideNotFitted']=p[i+1]
     s['SlideExpired']=p[i+2]
-    s['StateT']=p[i+3:i+4]
-    s['StatePh']=p[i+5:i+6]
-    s['StateNh3']=p[i+7:i+8]
-    s['Error']=p[i+9]
-    s['IsKelvin']=p[i+10]
-    s['Temp']=p[i+7:i+8]
-    s['pH']=p[i+7:i+8]
-    s['NH3']=p[i+7:i+8]
-
+    s['pH']=p[272:288]
+    s['NH3']=p[288:304]
+    s['Temp']=p[304:336]
     if __debug__:
         pprint.pprint(s)
     return(None)
