@@ -32,7 +32,7 @@ There are command type messages, and response messages with readings from the de
 * Command: Communcation ends with a "BYESUD" message
 * Response: from "HELLOSUD"
 	- byte 1: eyecatcher value = 0x88
-	- byte 2: '0x01'='HELLOSUD', '0x02'='READING', '0x03'='LED'
+	- byte 2: 0x01
 	- byte 3: '1'=success, otherwise=failure
 	- byte 4: the type of the device, 0/1=home, 2=pond, 3=reef
 	- byte 5: device version byte 1
@@ -69,10 +69,36 @@ There are command type messages, and response messages with readings from the de
 
 | Byte 1 | Byte 2 | Byte 3 | Byte 4 | Byte 5 | Byte 6 | Byte 7 | Byte 8 | Description |
 |---|---|---|---|---|---|---|---|---|
-|0x88|0x01|||||||Response from HELLOSUD|
+|0x88|0x01|1|type|ver.b1|ver.b2|||Response from HELLOSUD|
 |0x88|0x02|1||||||Response from READING|
 |0x88|0x03|1||||||Response from LED|
 |0x88|?|?||||||Response from BYESUD|
 |0x00|0x01|||||||Reading|
 |0x00|0x02|||||||Lightmeter reading|
 
+##### READING bit string
+On the message returned for the READING command, there are a mixture of bits and bytes in use due to the use of the C STRUCT contruct. This means a little more work in Python but we can use the Bitstring library. At the moment I think it is like this:
+
+| C type | length in bits | Name | Description |
+|---|---|---|---|
+|int|32|Ts| unknown|
+    #bit : 2;
+    #bit InWater : 1;
+    #bit SlideNotFitted : 1;
+    #bit SlideExpired : 1;
+    #bit StateT : 2;
+    #bit StatePh : 2;
+    #bit StateNh3 : 2;
+    #bit Error : 1;
+    #bit IsKelvin : 1;
+    #char reserved[8]; 
+    #int  Kelvin;
+    #int  x;
+    #int  y;
+    #int  Par;
+    #int  Lux;
+    #char  PUR;
+    #short pH;
+    #short Nh3;
+    #int  T;
+    #char reserved[16];
