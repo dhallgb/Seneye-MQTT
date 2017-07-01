@@ -79,6 +79,7 @@ There are command type messages, and response messages with readings from the de
 ##### READING bit string
 On the message returned for the READING command, there are a mixture of bits and bytes in use due to the use of the C STRUCT contruct. This means a little more work in Python but we can use the Bitstring library. At the moment I think it is like this:
 
+
 | C type | length in bits | Position | Name | Description |
 |---|---|---|---|
 |int|32|0|Ts| unknown|
@@ -102,3 +103,4 @@ On the message returned for the READING command, there are a mixture of bits and
 |short|16|287|Nh3|Ammonia level|
 |int|32|303|T|Temperature|
 |char||335|reserved|unknown char[16]|
+
