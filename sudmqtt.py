@@ -10,6 +10,7 @@ import usb.util
 import yaml
 import sys
 import atexit
+import json
 config=[]
 device=[]
 interface=0
@@ -67,7 +68,7 @@ def read_sud(dev, interface):
         print("return string>>>",sret)
 
     # read from device again
-    ret=dev.read(epIn,epIn.wMaxPacketSize,1000)
+    ret=dev.read(epIn,epIn.wMaxPacketSize,10000)
     sret = ''.join([chr(x) for x in ret])
     if __debug__:
         print("return       >>>",ret)
@@ -79,6 +80,13 @@ def read_sud(dev, interface):
     if __debug__:
         print("BYE ret code >>>",rc)
     return(sret)
+
+def mungSensor(params):
+    # strip bytes to bits
+    
+    # build json
+    sensorReadings=
+    return(sensorReadings)
 
 def clean_up(dev):
     # re-attach kernel driver
@@ -97,8 +105,10 @@ def main():
     if __debug__:
         print("device       >>>",device)
     sensor=read_sud(device, interface)
+    # format into json
+    readings=mungSensor(sensor)
     # push readings to MQTT broker
-    publish.single(config['mqtt']['topic'], sensor, hostname=config['mqtt']['url'])
+    publish.single(config['mqtt']['topic'], readings, hostname=config['mqtt']['url'])
     clean_up(device)
 
 if __name__ == "__main__":
