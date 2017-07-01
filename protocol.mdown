@@ -81,7 +81,7 @@ On the message returned for the READING command, there are a mixture of bits and
 
 
 | C type | length in bits | Position | Name | Description |
-|---|---|---|---|
+|---|---|---|---|---|
 |int|32|0|Ts| unknown|
 |bit|2|31|none|unknown|
 |bit|1|32|InWater|in or out of water|
