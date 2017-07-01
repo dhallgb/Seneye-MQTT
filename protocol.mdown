@@ -82,11 +82,11 @@ On the message returned for the READING command, there are a mixture of bits and
 | C type | length in bits | Name | Description |
 |---|---|---|---|
 |int|32|Ts| unknown|
-    #bit : 2;
-    #bit InWater : 1;
-    #bit SlideNotFitted : 1;
-    #bit SlideExpired : 1;
-    #bit StateT : 2;
+|bit|2|none|unknown|
+|bit|1|InWater|in or out of water|
+|bit|1|SlideNotFitted|is there a slide|
+|bit|1|SlideExpired|has the slide expired|
+|bit|2|StateT|unknown|
     #bit StatePh : 2;
     #bit StateNh3 : 2;
     #bit Error : 1;
