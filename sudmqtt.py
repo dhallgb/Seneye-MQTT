@@ -83,16 +83,19 @@ def read_sud(dev, interface):
 def mungReadings(p):
     # see protocol.mdown for explaination of this
     s={}
-    i=36
-    s['InWater']=p[i]
-    s['SlideNotFitted']=p[i+1]
-    s['SlideExpired']=p[i+2]
-    s['pH']=p[272:288]
-    s['NH3']=p[288:304]
-    s['Temp']=p[304:336]
+    s['InWater']=p[36]
+    s['SlideNotFitted']=p[37]
+    s['SlideExpired']=p[38]
+    ph=p[47:63]
+    s['pH']=ph.int
+    nh3=p[63:75]
+    s['NH3']=nh3.int
+    temp=p[75:107]
+    s['Temp']=temp.int
     if __debug__:
         pprint.pprint(s)
-    return(None)
+    j = json.dumps(s, ensure_ascii=False)
+    return(j)
 
 def clean_up(dev):
     # re-attach kernel driver

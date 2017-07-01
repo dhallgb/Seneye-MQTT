@@ -82,7 +82,7 @@ On the message returned for the READING command, there are a mixture of bits and
 | C type | length in bits | Position | Name | Description |
 |---|---|---|---|---|
 |int|32|0|Ts| unknown|
-|bit|2|31|reserved|unknown|
+|bit|2|31|reserved|unknown bit[2]|
 |bit|1|33|InWater|in or out of water|
 |bit|1|34|SlideNotFitted|is there a slide|
 |bit|1|35|SlideExpired|has the slide expired|
@@ -91,15 +91,15 @@ On the message returned for the READING command, there are a mixture of bits and
 |bit|2|40|StateNh3|unknown|
 |bit|1|42|Error|unknown|
 |bit|1|43|IsKelvin|unknown|
-|char|64|44|reserved|unknown char[8]| 
-|int|32|108|Kelvin|unknown|
-|int|32|140|x|unknown|
-|int|32|172|y|unknown|
-|int|32|204|Par|PAR light level|
-|int|32|236|Lux|Lux level|
-|char|4|268|PUR|unknown|
-|short|16|272|pH|pH level|
-|short|16|288|Nh3|Ammonia level|
-|int|32|304|T|Temperature|
-|char|128|336|reserved|unknown char[16]|
+|short|16|44|pH|pH level|
+|short|16|60|Nh3|Ammonia level|
+|int|32|72|T|Temperature|
+|char|64|104|reserved|unknown char[8]| 
+|int|32|168|Kelvin|unknown|
+|int|32|200|x|unknown|
+|int|32|232|y|unknown|
+|int|32|264|Par|PAR light level|
+|int|32|296|Lux|Lux level|
+|char|4|328|PUR|unknown|
+|char|128|332|reserved|unknown char[16]|
 
