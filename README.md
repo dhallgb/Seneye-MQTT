@@ -11,11 +11,11 @@ This project is an attempt to do some basic stuff: read from a Seneye device and
 - Linux single-board computer (Odroid, Raspberry Pi, ...). I used a RasPi Zero W which looks like a stick of gum...!
 - MQTT broker such as Bluemix, HiveMQ, CloudMQTT, or see https://github.com/mqtt/mqtt.github.io/wiki/public_brokers
 - if you need a dashboard, FreeBoard.io, Crouton (http://crouton.mybluemix.net/crouton/gettingStarted) are a couple
+- normally USB devices cannot be accessed without root authority, so if you want to run without using the sudo command, try putting something like the 10-local.rules file into your /etc/udev/rules.d/ directory (and change group to a group to which you belong - use 'groups' command to find out which). To understand this better search the internet for "access USB without sudo"
 
 # Usage
 1. Using a microusb adapter connect your Seneye SUD to the microusb port of a RasPi Zero
 1. Install prerequisites as above
-1. If you want to run without using sudo, try putting something like the 10-local.rules file into your /etc/udev/rules.d/ directory. To understand this better search the internet for "access USB without sudo"
 1. copy config.yaml.template to config.yaml and edit changing at least
 	- MQTT broker endpoint
 	- publication topic

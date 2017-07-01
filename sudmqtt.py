@@ -5,27 +5,32 @@
 # See the file protocol.mdown for a description of the SUD communications flow
 #
 import paho.mqtt.publish as publish
-import usb.core
-import usb.util
-import yaml
-import sys
-import atexit
-import json
+import usb.core, usb.util
+import yaml, sys, json
 config=[]
 device=[]
 interface=0
+
+def printhex(s):
+    print(type(s),len(s),":".join("{:02x}".format(c) for c in s))
+
+def setup_up():
+    # find the device using product id strings
+    dev = usb.core.find(idVendor=9463, idProduct=8708)
+    if __debug__:
+        print("device       >>>",device)
+    return(dev)
 
 def read_sud(dev, interface):
     # release kernel driver if active
     if dev.is_kernel_driver_active(interface):
         dev.detach_kernel_driver(interface)
 
-    # by passing no parameter we pick up the first configuration, then claim interface
+    # by passing no parameter we pick up the first configuration, then claim interface, in that order
     dev.set_configuration()
     usb.util.claim_interface(dev, interface)
     configuration = dev.get_active_configuration()
     interface = configuration[(0,0)]
-
     if __debug__:
         print("configuration>>>",configuration)
         print("interface    >>>",interface)
@@ -67,11 +72,11 @@ def read_sud(dev, interface):
         print("return       >>>",ret)
         print("return string>>>",sret)
 
-    # read from device again
+    # read from device again, long time out
     ret=dev.read(epIn,epIn.wMaxPacketSize,10000)
     sret = ''.join([chr(x) for x in ret])
     if __debug__:
-        print("return       >>>",ret)
+        print("return       >>>",printhex(ret))
         print("return string>>>",sret)
 
     # write to device with close string
@@ -81,11 +86,12 @@ def read_sud(dev, interface):
         print("BYE ret code >>>",rc)
     return(sret)
 
-def mungSensor(params):
+def mungReadings(params):
     # strip bytes to bits
-    
+
     # build json
-    sensorReadings=
+    sensorReadings=[]
+    return(params)
     return(sensorReadings)
 
 def clean_up(dev):
@@ -100,15 +106,15 @@ def clean_up(dev):
 def main():
     # load config
     config = yaml.safe_load(open("config.yaml"))
-    # find the device using product id strings
-    device = usb.core.find(idVendor=9463, idProduct=8708)
-    if __debug__:
-        print("device       >>>",device)
-    sensor=read_sud(device, interface)
+    # open device
+    device = setup_up()
+    # read device
+    sensor = read_sud(device, interface)
     # format into json
-    readings=mungSensor(sensor)
+    readings=mungReadings(sensor)
     # push readings to MQTT broker
     publish.single(config['mqtt']['topic'], readings, hostname=config['mqtt']['url'])
+    # close device
     clean_up(device)
 
 if __name__ == "__main__":

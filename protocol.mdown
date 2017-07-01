@@ -1,9 +1,16 @@
 # SUD Protocol
-This is an attempt to describe the SUD protocol based on reading the main.cpp file that Seneye released.
+This is an attempt to describe the SUD protocol based on reading the main.cpp file that Seneye released. At least this is what I think happens from my reading of the code, if anyone would like to read the Seneye main.cpp module and edit to correct then please do. Fork the repository, edit, push and send me a new pull request, thanks!
 
 ## USB device
+USB devices have a hierarchy of interfaces, like so:
+* Device
+* Configuration
+* Interface
+* Alternate setting
+* Endpoint
+
 ### Transfers
-The SUD device seems to have these 2 types of USB transfers available: interrupt and bulk. HID devices only use 2 transfer modes of either control or interrupt.
+The SUD device seems to have these 2 types of USB transfers available: interrupt and bulk. HID devices only use 2 transfer modes of either control or interrupt. From from https://en.wikipedia.org/wiki/USB_human_interface_device_class HID devices do not use the 'bulk' interface, so only the 'interrupt' interface is used. In any case, we search for the endpoints rather than hard code them.
 
 ### Endpoints
 Max packet size is 64 bytes for all endpoints.
@@ -13,20 +20,9 @@ From printing the configuration these are the endpoints:
 - ENDPOINT 0x82: Bulk IN
 - ENDPOINT 0x2: Bulk OUT
 
-Apparently HID devices do not use the 'bulk' interface, so only the 'interrupt' interface is used.
-This comes from https://en.wikipedia.org/wiki/USB_human_interface_device_class
-
-USB devices have a hierarchy of interfaces, like so:
-1. Device
-1. Configuration
-1. Interface
-1. Alternate setting
-1. Endpoint
-
 ## Protocol
 ### Protocol flow
 From what I have been able to determine from the C++ module that Seneye released, the flow goes a little like this: once you have obtained correct access to the device via USB handlers, you start by sending the "HELLOSUD" message and receive a version message in response. You then ask for the sensor values using a message "READING", and get back a return code if the command was accepted. You then read the next message (no command) with a longer timeout and get the sensor values. At the end you then send a "BYESUD" closing message to stop communication and close down the USB handlers as appropriate. The command to switch on or off the LEDs is similar.
-
 
 ### Protocol messages
 There are command type messages, and response messages with readings from the device.
@@ -42,8 +38,22 @@ There are command type messages, and response messages with readings from the de
 	- byte 5: device version byte 1
 	- byte 6: device version byte 2, version is x.x.x
 * Response: from "READING"
+	- byte 1: eyecatcher value = 0x88
+	- byte 2: '0x02'
+	- byte 3: '1'=success, otherwise=failure
+* Response: from "LED"
+	- byte 1: eyecatcher value = 0x88
+	- byte 2: '0x03'
+	- byte 3: '1'=success, otherwise=failure
+* Response: from "BYESUD"
 	- byte 1: eyecatcher value = 0x00
 	- byte 2: '0x01'=reading, '0x02'=lightmeter reading
+* Response: subsequent read after "READING" command and response
+	- byte 1: eyecatcher value = 0x00
+	- byte 2: '0x01'=reading
+* Response: subsequent read after "READING" command and response
+	- byte 1: eyecatcher value = 0x00
+	- byte 2: '0x02'=lightmeter reading
 
 ### Protocol table
 #### Outgoing to SUD
@@ -52,7 +62,7 @@ There are command type messages, and response messages with readings from the de
 |---|---|---|---|---|---|---|---|---|
 |H|E|L|L|O|S|U|D|Start comms|
 |R|E|A|D|I|N|G||READING|
-|L|E|D||||||LED|
+|L|E|D|L1|L2|L3|L4|L5|LEDs 1-5 on/off|
 |B|Y|E|S|U|D|||End comms|
 
 #### Incoming from SUD
@@ -62,10 +72,7 @@ There are command type messages, and response messages with readings from the de
 |0x88|0x01|||||||Response from HELLOSUD|
 |0x88|0x02|1||||||Response from READING|
 |0x88|0x03|1||||||Response from LED|
+|0x88|?|?||||||Response from BYESUD|
 |0x00|0x01|||||||Reading|
 |0x00|0x02|||||||Lightmeter reading|
 
-
-
-# How you can help
-At least this is what I think happens from my reading of the code, if anyone would like to read the Seneye main.cpp module and edit to correct then please do. To do that, fork the code repo, edit, push and send me a new pull request, thanks!
