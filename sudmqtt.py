@@ -8,8 +8,6 @@ import paho.mqtt.publish as publish
 import usb.core, usb.util
 import sys, json, pprint
 from bitstring import BitArray
-config=[]
-device=[]
 interface=0
 hostname='lonna'
 topic='raw/aquarium'
