@@ -81,17 +81,17 @@ def read_sud(dev, interface):
     return(c)
 
 def mungReadings(p):
-    # see protocol.mdown for explaination of this
+    # see protocol.mdown for explaination of where the bitstrings start and end
     s={}
-    s['InWater']=p[36]
-    s['SlideNotFitted']=p[37]
-    s['SlideExpired']=p[38]
-    ph=p[47:63]
-    s['pH']=ph.int
-    nh3=p[63:75]
-    s['NH3']=nh3.int
-    temp=p[75:107]
-    s['Temp']=temp.int
+    s['InWater']=p[33]
+    s['SlideNotFitted']=p[34]
+    s['SlideExpired']=p[35]
+    ph=p[44:60]
+    s['pH']=ph.int/100   # divided by 100 as per the display statement in the Seneye main.cpp
+    nh3=p[60:72]
+    s['NH3']=nh3.int/1000  # divided by 1000 as per the display statement in the Seneye main.cpp
+    temp=p[72:104]
+    s['Temp']=temp.int/1000 # divided by 1000 as per the display statement in the Seneye main.cpp
     if __debug__:
         pprint.pprint(s)
     j = json.dumps(s, ensure_ascii=False)
