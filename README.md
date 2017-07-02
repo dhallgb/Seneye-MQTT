@@ -1,5 +1,8 @@
 # Read Seneye via MQTT
-This project is an attempt to do some basic stuff: read from a Seneye USB device ('SUD') and transmit this information periodically to a MQTT endpoint.
+This program reads from a Seneye USB device ('SUD') and transmits this information to an MQTT broker.
+
+***Warning***
+We are utilising the SUD outside its design boundaries, thanks to the kindness of Seneye in releasing the C++ code. Please be aware that you may damage your device by tinkering with it like this.
 
 ## Requirements
 - Python libraries pprint, pyusb, mqtt (installed using 'pip install paho-mqtt')
@@ -15,7 +18,8 @@ This project is an attempt to do some basic stuff: read from a Seneye USB device
 1. Connect your Seneye SUD to your SBC
 1. Access the USB without using sudo, perhaps by:
 	- installing the 10-local.rules file into your /etc/udev/rules.d/ directory
-	- add the user who will run this program to the 'plugdev' group ('sudo usermod -a -G plugdev userid')
-	- activate the new udev rule ('sudo udevadm trigger')
+	- add the user who will run this program to the __plugdev__ group `sudo usermod -a -G plugdev userid`
+	- activate the new udev rule `sudo udevadm trigger`
 1. Run periodically, for example using cron
+1. To run without debugging use the optimize switch `python -O sudmqtt.py`
 1. Use MQTT to subscribe to the published topic elsewhere and put it on a dashboard

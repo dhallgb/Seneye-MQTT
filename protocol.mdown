@@ -1,5 +1,5 @@
 # SUD Protocol
-This is an attempt to describe the SUD protocol based on reading the main.cpp file that Seneye released. At least this is what I think happens from my reading of the code, if anyone would like to read the Seneye main.cpp module and edit to correct then please do. Fork the repository, edit, push and send me a new pull request, thanks!
+This is an attempt to describe the SUD protocol based on reading the main.cpp file that Seneye released. Contributions via git pull requests are most welcome.
 
 ## USB device
 USB devices have a hierarchy of interfaces, like so:
@@ -23,6 +23,8 @@ From printing the configuration these are the endpoints:
 ## Protocol
 ### Protocol flow
 From what I have been able to determine from the C++ module that Seneye released, the flow goes a little like this: once you have obtained correct access to the device via USB handlers, you start by sending the "HELLOSUD" message and receive a version message in response. You then ask for the sensor values using a message "READING", and get back a return code if the command was accepted. You then read the next message (no command) with a longer timeout and get the sensor values. At the end you then send a "BYESUD" closing message to stop communication and close down the USB handlers as appropriate. The command to switch on or off the LEDs is similar.
+
+I also found after a number of tests that the slide LED would light up, and no more readings could be taken. This seemed to be due to the device filling up some sort of offline memory and preventing any more until it had been loaded to the cloud. This was cleared by using the Windows Seneye Connect app and I noticed that it went through a routine of doing the offline uploads, after which the LED cleared and it could be read again. This feature may limit the usefulness of any foreign program reading the SUD, unless we can either dummy up the upload or utilise some of the control messages to the SUD.
 
 ### Protocol messages
 There are command type messages, and response messages with readings from the device.
@@ -77,23 +79,25 @@ There are command type messages, and response messages with readings from the de
 |0x00|0x02|||||||Lightmeter reading|
 
 ##### READING bit string
-On the message returned for the READING command, there are a mixture of bits and bytes in use due to the use of the C STRUCT contruct. This means a little more work in Python but we can use the Bitstring library. At the moment I think it is like this:
+On the message returned for the READING command, there are a mixture of bits and bytes in use due to the use of the C STRUCT contruct. This means a little more work in Python but we can use the Bitstring library. The use of a STRUCT will mean that bit padding will occur so that things like char, int and short are byte-aligned.
+
+At the moment I think it is like this:
 
 | C type | length in bits | Position | Name | Description |
 |---|---|---|---|---|
 |int|32|0|Ts| unknown|
 |bit|2|31|reserved|unknown bit[2]|
-|bit|1|33|InWater|in or out of water|
-|bit|1|34|SlideNotFitted|is there a slide|
-|bit|1|35|SlideExpired|has the slide expired|
-|bit|2|36|StateT|unknown|
-|bit|2|38|StatePh|unknown|
-|bit|2|40|StateNh3|unknown|
-|bit|1|42|Error|unknown|
-|bit|1|43|IsKelvin|unknown|
-|short|16|44|pH|pH level|
-|short|16|60|Nh3|Ammonia level|
-|int|32|72|T|Temperature|
+|bit|1|36|InWater|in or out of water|
+|bit|1|37|SlideNotFitted|is there a slide|
+|bit|1|38|SlideExpired|has the slide expired|
+|bit|2||StateT|unknown|
+|bit|2||StatePh|unknown|
+|bit|2||StateNh3|unknown|
+|bit|1||Error|unknown|
+|bit|1||IsKelvin|unknown|
+|short|16|80|pH|pH level|
+|short|16|96|Nh3|Ammonia level|
+|int|32|112|T|Temperature|
 |char|128||reserved|unknown char[16]|
 |char|64||reserved|unknown char[8]| 
 |int|32||Kelvin|unknown|

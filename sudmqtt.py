@@ -17,7 +17,10 @@ product=8708
 def printhex(s):
     return(type(s),len(s),":".join("{:02x}".format(c) for c in s))
 
-def setup_up():
+def printbit(s): 
+    return(type(s),len(s),":".join("{:02x}".format(c) for c in s))
+
+def set_up():
     # find the device using product id strings
     dev = usb.core.find(idVendor=vendor, idProduct=product)
     if __debug__:
@@ -67,14 +70,14 @@ def read_sud(dev, interface):
         print("READ ret code>>>",rc)
 
     # read from device twice, first for return from "READING", second for actual values
-    ret=dev.read(epIn,epIn.wMaxPacketSize,1000)
     ret=dev.read(epIn,epIn.wMaxPacketSize,10000)
+    ret=dev.read(epIn,epIn.wMaxPacketSize,100000)
     c = BitArray(ret)
     if __debug__:
         print("sensor hex   >>>",printhex(ret))
-        print("sensor bits  >>>",c.bin)
         print("sensor bits len>",len(c.bin))
-
+        print("sensor bits  >>>",c.bin)
+        
     # write to device with close string
     msg="BYESUD"
     rc=dev.write(epOut,msg)
@@ -85,15 +88,16 @@ def read_sud(dev, interface):
 def mungReadings(p):
     # see protocol.mdown for explaination of where the bitstrings start and end
     s={}
-    s['InWater']=p[33]
-    s['SlideNotFitted']=p[34]
-    s['SlideExpired']=p[35]
-    ph=p[44:60]
-    s['pH']=ph.int/100   # divided by 100
-    nh3=p[60:72]
-    s['NH3']=nh3.int/1000  # divided by 1000
-    temp=p[72:104]
-    s['Temp']=temp.int/1000 # divided by 1000
+    i=36
+    s['InWater']=p[i]
+    s['SlideNotFitted']=p[i+1]
+    s['SlideExpired']=p[i+2]
+    ph=p[80:96]
+    s['pH']=ph.uintle/100   # divided by 100
+    nh3=p[96:112]
+    s['NH3']=nh3.uintle/1000  # divided by 1000
+    temp=p[112:144]
+    s['Temp']=temp.intle/1000 # divided by 1000
     if __debug__:
         pprint.pprint(s)
     j = json.dumps(s, ensure_ascii=False)
@@ -110,7 +114,7 @@ def clean_up(dev):
 
 def main():
     # open device
-    device = setup_up()
+    device = set_up()
     # read device
     sensor = read_sud(device, interface)
     # format into json
