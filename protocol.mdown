@@ -94,12 +94,12 @@ On the message returned for the READING command, there are a mixture of bits and
 |short|16|44|pH|pH level|
 |short|16|60|Nh3|Ammonia level|
 |int|32|72|T|Temperature|
-|char|64|104|reserved|unknown char[8]| 
-|int|32|168|Kelvin|unknown|
-|int|32|200|x|unknown|
-|int|32|232|y|unknown|
-|int|32|264|Par|PAR light level|
-|int|32|296|Lux|Lux level|
-|char|4|328|PUR|unknown|
-|char|128|332|reserved|unknown char[16]|
+|char|128||reserved|unknown char[16]|
+|char|64||reserved|unknown char[8]| 
+|int|32||Kelvin|unknown|
+|int|32||x|unknown|
+|int|32||y|unknown|
+|int|32||Par|PAR light level|
+|int|32||Lux|Lux level|
+|char|4||PUR|unknown|
 

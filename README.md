@@ -16,8 +16,5 @@ This project is an attempt to do some basic stuff: read from a Seneye device and
 # Usage
 1. Using a microusb adapter connect your Seneye SUD to the microusb port of a RasPi Zero
 1. Install prerequisites as above
-1. copy config.yaml.template to config.yaml and edit changing at least
-	- MQTT broker endpoint
-	- publication topic
-1. run periodically, I used cron
-1. subscribe to the published topic and put it on a dashboard
+1. Run periodically perhaps using cron
+1. Using MQTT subscribe to the published topic and put it on a dashboard

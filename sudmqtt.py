@@ -6,18 +6,22 @@
 #
 import paho.mqtt.publish as publish
 import usb.core, usb.util
-import yaml, sys, json, pprint
+import sys, json, pprint
 from bitstring import BitArray
 config=[]
 device=[]
 interface=0
+hostname='lonna'
+topic='raw/aquarium'
+vendor=9463
+product=8708
 
 def printhex(s):
     return(type(s),len(s),":".join("{:02x}".format(c) for c in s))
 
 def setup_up():
     # find the device using product id strings
-    dev = usb.core.find(idVendor=9463, idProduct=8708)
+    dev = usb.core.find(idVendor=vendor, idProduct=product)
     if __debug__:
         print("device       >>>",dev)
     return(dev)
@@ -87,11 +91,11 @@ def mungReadings(p):
     s['SlideNotFitted']=p[34]
     s['SlideExpired']=p[35]
     ph=p[44:60]
-    s['pH']=ph.int/100   # divided by 100 as per the display statement in the Seneye main.cpp
+    s['pH']=ph.int/100   # divided by 100
     nh3=p[60:72]
-    s['NH3']=nh3.int/1000  # divided by 1000 as per the display statement in the Seneye main.cpp
+    s['NH3']=nh3.int/1000  # divided by 1000
     temp=p[72:104]
-    s['Temp']=temp.int/1000 # divided by 1000 as per the display statement in the Seneye main.cpp
+    s['Temp']=temp.int/1000 # divided by 1000
     if __debug__:
         pprint.pprint(s)
     j = json.dumps(s, ensure_ascii=False)
@@ -107,8 +111,6 @@ def clean_up(dev):
     dev.reset()
 
 def main():
-    # load config
-    config = yaml.safe_load(open("config.yaml"))
     # open device
     device = setup_up()
     # read device
@@ -116,7 +118,7 @@ def main():
     # format into json
     readings=mungReadings(sensor)
     # push readings to MQTT broker
-    publish.single(config['mqtt']['topic'], readings, hostname=config['mqtt']['url'])
+    publish.single(topic, readings, hostname=hostname)
     # close device
     clean_up(device)
 
