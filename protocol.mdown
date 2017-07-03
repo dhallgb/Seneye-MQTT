@@ -79,9 +79,9 @@ There are command type messages, and response messages with readings from the de
 |0x00|0x02|||||||Lightmeter reading|
 
 ##### READING bit string
-On the message returned for the READING command, there are a mixture of bits and bytes in use due to the use of the C STRUCT contruct. This means a little more work in Python but we can use the Bitstring library. The use of a STRUCT will mean that bit padding will occur so that things like char, int and short are byte-aligned. They also appear little-endian.
+The message returned from the READING command contains a mixture of bits and byte values. This means a little more work in Python but we can use the Bitstring library. The use of a STRUCT will mean that bit padding will occur so that things like char, int and short are byte-aligned. The ints and shorts are also little-endian.
 
-At the moment I think it is like this:
+I have mapped the following values:
 
 | C type | length in bits | Position | Name | Description |
 |---|---|---|---|---|

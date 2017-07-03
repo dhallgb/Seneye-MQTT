@@ -70,8 +70,8 @@ def read_sud(dev, interface):
         print("READ ret code>>>",rc)
 
     # read from device twice, first for return from "READING", second for actual values
+    ret=dev.read(epIn,epIn.wMaxPacketSize,1000)
     ret=dev.read(epIn,epIn.wMaxPacketSize,10000)
-    ret=dev.read(epIn,epIn.wMaxPacketSize,100000)
     c = BitArray(ret)
     if __debug__:
         print("sensor hex   >>>",printhex(ret))
