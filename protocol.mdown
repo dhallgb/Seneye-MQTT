@@ -48,8 +48,9 @@ There are command type messages, and response messages with readings from the de
 	- byte 2: '0x03'
 	- byte 3: '1'=success, otherwise=failure
 * Response: from "BYESUD"
-	- byte 1: eyecatcher value = 0x00
-	- byte 2: '0x01'=reading, '0x02'=lightmeter reading
+	- byte 1: eyecatcher value = 0x77
+	- byte 2: '0x01'
+	- byte 3: '0x01'
 * Response: subsequent read after "READING" command and response
 	- byte 1: eyecatcher value = 0x00
 	- byte 2: '0x01'=reading
@@ -74,7 +75,7 @@ There are command type messages, and response messages with readings from the de
 |0x88|0x01|1|type|ver.b1|ver.b2|||Response from HELLOSUD|
 |0x88|0x02|1||||||Response from READING|
 |0x88|0x03|1||||||Response from LED|
-|0x88|?|?||||||Response from BYESUD|
+|0x77|0x01|1||||||Response from BYESUD|
 |0x00|0x01|||||||Reading|
 |0x00|0x02|||||||Lightmeter reading|
 
@@ -85,7 +86,7 @@ I have mapped the following values:
 
 | C type | length in bits | Position | Name | Description |
 |---|---|---|---|---|
-|int|32||Ts| unknown|
+|int|32||Ts|Unix Timestamp|
 |bit|2||reserved|unknown bit[2]|
 |bit|1|36|InWater|in or out of water|
 |bit|1|37|SlideNotFitted|is there a slide|
@@ -94,16 +95,30 @@ I have mapped the following values:
 |bit|2||StatePh|unknown|
 |bit|2||StateNh3|unknown|
 |bit|1||Error|unknown|
-|bit|1||IsKelvin|unknown|
-|short|16|80|pH|pH level|
-|short|16|96|Nh3|Ammonia level|
-|int|32|112|T|Temperature|
+|bit|1||IsKelvin|valid Kelvin measure is taken|
+|short|16|80|pH|pH level (x100)|
+|short|16|96|Nh3|Ammonia level (x1000)|
+|int|32|112|T|Temperature (x1000)|
 |char|128||reserved|unknown char[16]|
 |char|64||reserved|unknown char[8]| 
-|int|32||Kelvin|unknown|
+|int|32||Kelvin|light colour temperature in the Kelvin scale (x1000)|
 |int|32||x|unknown|
 |int|32||y|unknown|
 |int|32||Par|PAR light level|
 |int|32||Lux|Lux level|
-|char|4||PUR|unknown|
+|char|4||PUR|PUR value in percentage|
 
+##### Lightmeter readings
+Lightmeter readings are continuosly sent by the device periodically after the "HELLOSUD" message. They can arrive at any time and get mixed with other readings.
+
+The values are a subset of a full reading and include just the lightmeter measurements:
+
+| C type | length in bits | Position | Name | Description |
+|---|---|---|---|---|
+|int|32||IsKelvin|valid Kelvin measure is taken|
+|int|32||Kelvin|light colour temperature in the Kelvin scale (x1000)|
+|int|32||x|unknown|
+|int|32||y|unknown|
+|int|32||Par|PAR light level|
+|int|32||Lux|Lux level|
+|char|4||PUR|PUR value in percentage|
